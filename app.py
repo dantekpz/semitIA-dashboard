@@ -3,7 +3,6 @@
 # Minimal, claro y con FIX definitivo de íconos del header
 # ============================================
 
-# --- Imports & Config ---
 import time
 import requests
 import pandas as pd
@@ -12,83 +11,55 @@ import streamlit as st
 
 st.set_page_config(page_title="SemitIA – IHRA Dashboard", page_icon="🕊️", layout="centered")
 
-# --- CSS minimalista, seguro y con FIX de íconos del header ---
+# ===== CSS unificado y FIX de íconos =====
 st.markdown("""
 <style>
-/* ===== Base clara unificada ===== */
 html, body, [data-testid="stAppViewContainer"] {
   background-color: #FFFFFF !important;
   color: #0F172A !important;
 }
 
-/* ===== Header claro ===== */
+/* HEADER */
 header[data-testid="stHeader"], .stApp header {
   background-color: #FFFFFF !important;
   color: #0F172A !important;
   border-bottom: 1px solid #E5E7EB !important;
 }
 
-/* ===== FIX DEFINITIVO: iconos del header oscuros y visibles ===== */
-/* Contenedor de la toolbar */
+/* FIX definitivo de íconos oscuros */
 [data-testid="stToolbar"], header [data-testid="stToolbar"], .stApp header [data-testid="stToolbar"] {
   color: #0F172A !important;
   opacity: 1 !important;
   filter: none !important;
   mix-blend-mode: normal !important;
 }
-
-/* Texto y elementos dentro del header */
-header[data-testid="stHeader"] *, .stApp header * {
-  color: #0F172A !important;
-  opacity: 1 !important;
-  filter: none !important;
-  mix-blend-mode: normal !important;
-  -webkit-text-fill-color: #0F172A !important;
-}
-
-/* Íconos SVG del header (todas las variantes) */
 header[data-testid="stHeader"] svg,
 header[data-testid="stHeader"] svg *,
-header[data-testid="stHeader"] path,
-header[data-testid="stHeader"] g,
 [data-testid="stToolbar"] svg,
 [data-testid="stToolbar"] svg *,
-[data-testid="stToolbar"] path,
-[data-testid="stToolbar"] g,
 .stApp header svg,
-.stApp header svg *,
-.stApp header path,
-.stApp header g {
+.stApp header svg * {
   fill: #0F172A !important;
   stroke: #0F172A !important;
   color: #0F172A !important;
   opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-block !important;
   filter: none !important;
   mix-blend-mode: normal !important;
-  display: inline-block !important;
-  visibility: visible !important;
   width: 1em !important; height: 1em !important;
 }
 
-/* Asegura que botones/enlaces de header no oculten íconos */
-header[data-testid="stHeader"] button, header[data-testid="stHeader"] a,
-.stApp header button, .stApp header a {
-  color: #0F172A !important;
-  opacity: 1 !important;
-  filter: none !important;
-}
-
-/* ===== Sidebar claro ===== */
+/* SIDEBAR */
 [data-testid="stSidebar"] {
   background-color: #F7F9FC !important;
   color: #0F172A !important;
 }
-[data-testid="stSidebar"] * { color: #0F172A !important; }
-[data-testid="stSidebar"] svg, [data-testid="stSidebar"] svg * {
-  fill: #0F172A !important; stroke: #0F172A !important;
+[data-testid="stSidebar"] * {
+  color: #0F172A !important;
 }
 
-/* ===== Botones “startup minimal” ===== */
+/* BOTONES */
 .stButton > button, .stDownloadButton > button {
   background: #0F172A !important;
   color: #FFFFFF !important;
@@ -96,27 +67,12 @@ header[data-testid="stHeader"] button, header[data-testid="stHeader"] a,
   border-radius: 10px !important;
   padding: 10px 16px !important;
   font-weight: 600 !important;
-  letter-spacing: 0.2px !important;
 }
 .stButton > button:hover, .stDownloadButton > button:hover {
   background: #15223B !important;
-  border-color: #15223B !important;
 }
 
-/* Botón secundario “ghost” */
-.ghost-btn {
-  background: #FFFFFF !important;
-  color: #0F172A !important;
-  border: 1px solid #E5E7EB !important;
-  border-radius: 10px !important;
-  padding: 10px 16px !important;
-  font-weight: 600 !important;
-}
-.ghost-btn:hover {
-  border-color: #0F172A !important;
-}
-
-/* ===== File Uploader moderno ===== */
+/* FILE UPLOADER */
 [data-testid="stFileUploaderDropzone"] {
   background: #FFFFFF !important;
   border: 2px dashed #CBD5E1 !important;
@@ -137,7 +93,7 @@ header[data-testid="stHeader"] button, header[data-testid="stHeader"] a,
   font-weight: 600 !important;
 }
 
-/* ===== Cards / badges ===== */
+/* CARDS */
 .badge {display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #e5e7eb;background:#f8fafc}
 .badge-0 {background:#e6f7ff;border-color:#b3e5fc}
 .badge-1 {background:#fffbe6;border-color:#ffec99}
@@ -147,15 +103,14 @@ header[data-testid="stHeader"] button, header[data-testid="stHeader"] a,
 .caption {color:#64748b;font-size:12px}
 .footer {margin-top:30px;color:#94a3b8;font-size:12px;text-align:center}
 
-/* ===== Contenedor un poco más cómodo ===== */
-.block-container { padding-top: 1.0rem; }
+.block-container { padding-top: 1rem; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- Secrets (backend URL / token) ---
-API_BASE = st.secrets.get("API_BASE")          # ej: https://tu-backend.app
-API_ENDPOINT = st.secrets.get("API_ENDPOINT")  # opcional: https://tu-backend.app/classify
-API_TOKEN = st.secrets.get("API_TOKEN")        # SOLO el token (sin "Bearer ")
+# ===== Variables de entorno (secrets) =====
+API_BASE = st.secrets.get("API_BASE")
+API_ENDPOINT = st.secrets.get("API_ENDPOINT")
+API_TOKEN = st.secrets.get("API_TOKEN")
 
 def get_headers():
     h = {"Content-Type": "application/json"}
@@ -173,94 +128,66 @@ def get_classify_url():
 def get_stats_url():
     return f"{API_BASE}/api/stats" if API_BASE else None
 
-# --- HERO minimalista (tipo startup) ---
+# ===== Portada =====
 st.markdown("## 🕊️ SemitIA")
 st.markdown("Clasificación **IHRA (0–3)** con explicación y confianza para entender y prevenir el antisemitismo online.")
 
-col_hero1, col_hero2 = st.columns([1,1])
-with col_hero1:
+col1, col2 = st.columns(2)
+with col1:
     if st.button("▶️ Demo en vivo"):
         st.session_state["_mode"] = "Clasificación en vivo"
-with col_hero2:
-    # botón “ghost” secundario
-    ghost_clicked = st.button("📂 Subir CSV", key="ghost_csv")
-    if ghost_clicked:
+with col2:
+    if st.button("📂 Subir CSV"):
         st.session_state["_mode"] = "CSV"
 
 default_mode = st.session_state.get("_mode", "CSV")
 
-# --- Sidebar (modo + about) ---
+# ===== Sidebar =====
 st.sidebar.title("SemitIA")
-mode = st.sidebar.radio(
-    "Modo", ["CSV", "Clasificación en vivo", "Estadísticas"],
-    index=["CSV","Clasificación en vivo","Estadísticas"].index(default_mode)
-)
+mode = st.sidebar.radio("Modo", ["CSV", "Clasificación en vivo", "Estadísticas"],
+                        index=["CSV","Clasificación en vivo","Estadísticas"].index(default_mode))
 with st.sidebar.expander("Acerca de"):
-    st.markdown("Clasificación automática del discurso sobre judíos/Israel según definición IHRA (2016).")
+    st.markdown("Clasificación automática del discurso sobre judíos/Israel según la definición IHRA (2016).")
     st.markdown('<span class="caption">Demo educativa. No reemplaza moderación humana.</span>', unsafe_allow_html=True)
 
-# =========================
-#        MODO CSV
-# =========================
+# ===== CSV =====
 if mode == "CSV":
     st.markdown("### 📊 Análisis IHRA de Tuits (CSV)")
-    st.caption("Subí un CSV con columnas: `texto, etiqueta_gpt, subtipo_gpt, confidence_gpt, reason_gpt`.")
+    uploaded = st.file_uploader("Arrastrá o elegí un archivo CSV", type=["csv"])
 
-    uploaded = st.file_uploader("Arrastrá y soltá el archivo, o haz clic en **Elegir archivo**", type=["csv"])
     if uploaded:
         df = pd.read_csv(uploaded)
-
-        # Validación
-        cols_requeridas = {"texto", "etiqueta_gpt", "subtipo_gpt", "confidence_gpt", "reason_gpt"}
-        faltantes = cols_requeridas - set(df.columns)
+        cols = {"texto", "etiqueta_gpt", "subtipo_gpt", "confidence_gpt", "reason_gpt"}
+        faltantes = cols - set(df.columns)
         if faltantes:
-            st.error(f"Faltan columnas en el CSV: {', '.join(sorted(faltantes))}")
+            st.error(f"Faltan columnas: {', '.join(sorted(faltantes))}")
             st.stop()
 
-        st.download_button(
-            "💾 Descargar CSV enriquecido",
+        st.download_button("💾 Descargar CSV enriquecido",
             data=df.to_csv(index=False).encode("utf-8"),
-            file_name="semitia_clasificado.csv",
-            mime="text/csv"
-        )
+            file_name="semitia_clasificado.csv", mime="text/csv")
 
-        st.subheader("Datos generales")
         st.write(f"Tuits analizados: **{len(df)}**")
-
-        st.subheader("Distribución de clasificaciones (IHRA 0–3)")
         conteo = df["etiqueta_gpt"].value_counts().sort_index()
         fig, ax = plt.subplots()
         ax.bar(conteo.index.astype(str), conteo.values)
-        ax.set_xlabel("Categoría IHRA (0–3)")
-        ax.set_ylabel("Cantidad de tuits")
         st.pyplot(fig)
 
-        opciones = sorted(df["etiqueta_gpt"].dropna().unique())
-        opcion = st.selectbox("🔍 Filtrar por categoría (0–3):", opciones)
-        filtrados = df[df["etiqueta_gpt"] == opcion]
-        st.write(f"Mostrando **{len(filtrados)}** tuits")
-        st.dataframe(filtrados[["texto", "subtipo_gpt", "confidence_gpt", "reason_gpt"]], use_container_width=True)
+        opcion = st.selectbox("Filtrar por categoría (0–3):", sorted(df["etiqueta_gpt"].dropna().unique()))
+        st.dataframe(df[df["etiqueta_gpt"] == opcion][["texto", "subtipo_gpt", "confidence_gpt", "reason_gpt"]])
     else:
-        st.info("⬆️ Arrastrá tu CSV o haz clic en **Elegir archivo**.")
+        st.info("⬆️ Subí un CSV con tus clasificaciones.")
 
-# ===============================
-#   MODO CLASIFICACIÓN EN VIVO
-# ===============================
+# ===== Clasificación en vivo =====
 elif mode == "Clasificación en vivo":
     st.markdown("### 🔎 Clasificación IHRA en vivo")
-
-    with st.expander("⚙️ Diagnóstico"):
-        st.write("API_ENDPOINT:", API_ENDPOINT or "—")
-        st.write("API_BASE:", API_BASE or "—")
-        st.write("URL destino:", get_classify_url() or "❌ no configurada")
-
     ejemplos = {
         "0 · Neutro": "Hoy se recuerda el Holocausto.",
         "1 · Crítica política": "El gobierno de Israel actúa de forma desproporcionada.",
         "2 · Implícito": "Israel controla los medios y nadie lo dice.",
         "3 · Explícito": "El Holocausto nunca existió."
     }
-    ej = st.selectbox("Elegí un ejemplo (opcional)", list(ejemplos.keys()), index=None, placeholder="Elegí un ejemplo…")
+    ej = st.selectbox("Elegí un ejemplo (opcional)", list(ejemplos.keys()), index=None)
     if ej:
         st.session_state["_texto_demo"] = ejemplos[ej]
 
@@ -270,53 +197,44 @@ elif mode == "Clasificación en vivo":
     if st.button("Clasificar"):
         url = get_classify_url()
         if not url:
-            st.error("No hay URL configurada. Definí `API_ENDPOINT` o `API_BASE` en Secrets.")
+            st.error("No hay URL configurada.")
             st.stop()
         if not texto.strip():
             st.warning("Pegá un texto primero.")
             st.stop()
-
         try:
             t0 = time.time()
             with st.spinner("Clasificando..."):
                 r = requests.post(url, headers=get_headers(), json={"text": texto}, timeout=timeout_s)
-        except requests.exceptions.ReadTimeout:
-            st.error(f"Timeout: el backend tardó más de {timeout_s}s en responder.")
-            st.stop()
         except Exception as e:
-            st.error(f"No se pudo conectar al backend: {e}")
+            st.error(f"Error: {e}")
             st.stop()
 
         elapsed = int((time.time() - t0) * 1000)
         if r.status_code != 200:
-            st.error(f"Error {r.status_code}: {r.text[:500]}")
+            st.error(f"Error {r.status_code}: {r.text}")
         else:
             data = r.json()
             nivel = data.get("label")
             sub = data.get("subtype") or "—"
-            rsn = data.get("reason") or "—"
             conf = data.get("confidence")
-
+            rsn = data.get("reason") or "—"
             st.markdown(f"""
             <div class="card">
               <div class="badge badge-{nivel}">Nivel IHRA: {nivel}</div>
-              <div style="margin-top:8px"><b>Subtipo:</b> {sub}</div>
+              <div><b>Subtipo:</b> {sub}</div>
               <div><b>Confianza:</b> {f"{conf*100:.1f}%" if isinstance(conf,(int,float)) else "—"}</div>
               <div><b>Reason:</b> {rsn}</div>
             </div>
             """, unsafe_allow_html=True)
-
             c1, c2, c3 = st.columns(3)
-            c1.metric("Nivel IHRA", nivel if nivel is not None else "—")  # NOTE: es -> is (fix below)
+            c1.metric("Nivel IHRA", nivel if nivel is not None else "—")
             c2.metric("Confianza", f"{conf*100:.1f}%" if isinstance(conf,(int,float)) else "—")
-            c3.metric("Tiempo", f"{data.get('elapsed_ms', elapsed)} ms")
-            st.caption(f"IHRA version: {data.get('ihra_version','—')}")
+            c3.metric("Tiempo", f"{elapsed} ms")
 
-# =========================
-#         ESTADÍSTICAS
-# =========================
+# ===== Estadísticas =====
 elif mode == "Estadísticas":
-    st.markdown("### 📈 Estadísticas globales (v1)")
+    st.markdown("### 📈 Estadísticas globales")
     url_stats = get_stats_url()
     if not url_stats:
         st.info("Configura API_BASE en Secrets para habilitar /api/stats.")
@@ -326,11 +244,11 @@ elif mode == "Estadísticas":
     try:
         resp = requests.get(url_stats, headers=get_headers(), params={"range": rango}, timeout=30)
     except Exception as e:
-        st.error(f"No se pudo conectar al backend: {e}")
+        st.error(f"No se pudo conectar: {e}")
         st.stop()
 
     if resp.status_code != 200:
-        st.error(f"Error al obtener stats: {resp.status_code} {resp.text}")
+        st.error(f"Error: {resp.status_code}")
         st.stop()
 
     stats = resp.json()
@@ -339,26 +257,9 @@ elif mode == "Estadísticas":
         st.subheader("Conteo por nivel IHRA")
         df_counts = pd.DataFrame.from_dict(counts, orient="index").reset_index()
         df_counts.columns = ["label", "count"]
-        df_counts = df_counts.sort_values("label")
         fig, ax = plt.subplots()
         ax.bar(df_counts["label"].astype(str), df_counts["count"])
-        ax.set_xlabel("Nivel IHRA")
-        ax.set_ylabel("Cantidad")
         st.pyplot(fig)
     else:
-        st.info("No hay datos de conteo aún.")
-
-    series = stats.get("series", [])
-    if series:
-        st.subheader("Evolución temporal")
-        df_series = pd.DataFrame(series)
-        if "date" in df_series.columns:
-            df_series = df_series.sort_values("date")
-            ax2 = df_series.set_index("date")[["0","1","2","3"]].plot(figsize=(7,4))
-            ax2.set_ylabel("Cantidad")
-            ax2.set_xlabel("Fecha")
-            st.pyplot(plt.gcf())
-    else:
-        st.caption("Cuando el backend empiece a acumular datos, verás la serie temporal acá.")
-</style>
+        st.info("No hay datos aún.")
 """, unsafe_allow_html=True)

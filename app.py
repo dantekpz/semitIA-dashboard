@@ -1,4 +1,14 @@
 import streamlit as st
+import streamlit as st, requests, pandas as pd, matplotlib.pyplot as plt
+
+# 🔒 Leemos las variables seguras desde Streamlit Secrets
+API_BASE = st.secrets.get("API_BASE", "http://localhost:8001")
+API_TOKEN = st.secrets.get("API_TOKEN", None)
+
+# Encabezados HTTP para la API
+HEADERS = {"Content-Type": "application/json"}
+if API_TOKEN:
+    HEADERS["Authorization"] = f"Bearer {API_TOKEN}"
 import pandas as pd
 import matplotlib.pyplot as plt
 

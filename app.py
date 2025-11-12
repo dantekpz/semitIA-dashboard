@@ -11,6 +11,19 @@ import streamlit as st
 
 st.set_page_config(page_title="SemitIA – IHRA Dashboard", page_icon="🕊️", layout="centered")
 
+st.markdown("""
+<style>
+/* Fuerza fondo claro aunque el navegador esté en dark */
+html, body, [data-testid="stAppViewContainer"] {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+}
+[data-testid="stSidebar"] {
+  background: #F7F9FC !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # --- 2) CSS suave ---
 st.markdown("""
 <style>

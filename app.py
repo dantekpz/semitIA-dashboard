@@ -14,29 +14,43 @@ st.set_page_config(page_title="SemitIA – IHRA Dashboard", page_icon="🕊️",
 # --- CSS base (header + centro blancos unificados) ---
 st.markdown("""
 <style>
-/* Fondo general y contenedor central */
+/* ======= BASE CLARA (blanca) ======= */
+
+/* Centro y texto */
 html, body, [data-testid="stAppViewContainer"] {
   background-color: #FFFFFF !important;
-  color: #0F172A !important;
+  color: #0F172A !important; /* texto principal visible */
 }
 
-/* Sidebar claro */
-[data-testid="stSidebar"] {
-  background-color: #F7F9FC !important;
-}
-
-/* Header superior (viewer toolbar) blanco */
+/* Header (toolbar) */
 header[data-testid="stHeader"], .stApp header {
   background-color: #FFFFFF !important;
   color: #0F172A !important;
-  border-bottom: 1px solid #E5E7EB !important; /* separador sutil */
+  border-bottom: 1px solid #E5E7EB !important;
 }
-.stApp header::before, .stApp header::after {
-  background: none !important;
-  box-shadow: none !important;
+/* Asegurar iconos del header visibles */
+header[data-testid="stHeader"] *, .stApp header * {
+  color: #0F172A !important;
+}
+header[data-testid="stHeader"] svg, .stApp header svg {
+  fill: #0F172A !important;
+  stroke: #0F172A !important;
 }
 
-/* Helpers visuales */
+/* Sidebar claro + texto/iconos visibles */
+[data-testid="stSidebar"] {
+  background-color: #F7F9FC !important;
+  color: #0F172A !important;
+}
+[data-testid="stSidebar"] * {
+  color: #0F172A !important;
+}
+[data-testid="stSidebar"] svg {
+  fill: #0F172A !important;
+  stroke: #0F172A !important;
+}
+
+/* Helpers visuales (cards/badges) */
 .badge {display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #e5e7eb;background:#f8fafc}
 .badge-0 {background:#e6f7ff;border-color:#b3e5fc}
 .badge-1 {background:#fffbe6;border-color:#ffec99}

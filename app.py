@@ -2,7 +2,7 @@
 # SemitIA – IHRA Dashboard (Streamlit frontend)
 # ============================================
 
-# --- 1) Imports & Config ---
+# --- Imports & Config ---
 import time
 import requests
 import pandas as pd
@@ -11,22 +11,14 @@ import streamlit as st
 
 st.set_page_config(page_title="SemitIA – IHRA Dashboard", page_icon="🕊️", layout="centered")
 
+# --- Base CSS (claro por defecto) ---
 st.markdown("""
 <style>
-/* Fuerza fondo claro aunque el navegador esté en dark */
-html, body, [data-testid="stAppViewContainer"] {
-  background: #FFFFFF !important;
-  color: #0F172A !important;
-}
-[data-testid="stSidebar"] {
-  background: #F7F9FC !important;
-}
-</style>
-""", unsafe_allow_html=True)
+/* Fuerza fondo claro por defecto */
+html, body, [data-testid="stAppViewContainer"] { background: #FFFFFF !important; color:#0F172A !important; }
+[data-testid="stSidebar"] { background:#F7F9FC !important; }
 
-# --- 2) CSS suave ---
-st.markdown("""
-<style>
+/* UI helpers */
 .badge {display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #e5e7eb;background:#f8fafc}
 .badge-0 {background:#e6f7ff;border-color:#b3e5fc}
 .badge-1 {background:#fffbe6;border-color:#ffec99}
@@ -39,10 +31,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3) Secrets (backend URL y token) ---
+# --- Secrets (backend URL / token) ---
 API_BASE = st.secrets.get("API_BASE")          # ej: https://tu-backend.app
 API_ENDPOINT = st.secrets.get("API_ENDPOINT")  # opcional: https://tu-backend.app/classify
-API_TOKEN = st.secrets.get("API_TOKEN")        # SOLO el token, sin "Bearer "
+API_TOKEN = st.secrets.get("API_TOKEN")        # SOLO el token (sin "Bearer ")
 
 def get_headers():
     h = {"Content-Type": "application/json"}
@@ -60,7 +52,23 @@ def get_classify_url():
 def get_stats_url():
     return f"{API_BASE}/api/stats" if API_BASE else None
 
-# --- 4) Portada (Hero) ---
+# --- Sidebar: brand + night mode toggle + mode selector ---
+st.sidebar.title("SemitIA")
+dark = st.sidebar.toggle("🌙 Modo noche", value=False)
+
+# Si activan modo noche, sobreescribimos estilos
+if dark:
+    st.markdown("""
+    <style>
+    html, body, [data-testid="stAppViewContainer"] { background:#0B1220 !important; color:#E5E7EB !important; }
+    [data-testid="stSidebar"] { background:#0F172A !important; }
+    .card { background:#0F172A !important; border-color:#1F2937 !important; }
+    .badge { background:#111827 !important; border-color:#374151 !important; color:#E5E7EB !important; }
+    .caption, .footer { color:#9CA3AF !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- Hero (portada) ---
 with st.container():
     col1, col2 = st.columns([3, 1], vertical_alignment="center")
     with col1:
@@ -86,18 +94,20 @@ with st.container():
 
 default_mode = st.session_state.get("_mode", "CSV")
 
-# --- 5) Sidebar ---
-st.sidebar.title("SemitIA")
-mode = st.sidebar.radio(
-    "Modo", ["CSV", "Clasificación en vivo", "Estadísticas"],
-    index=["CSV","Clasificación en vivo","Estadísticas"].index(default_mode)
-)
+# --- Sidebar info + selector de modo ---
 with st.sidebar.expander("Acerca de SemitIA"):
     st.markdown("Clasificación automática del discurso sobre judíos/Israel según la definición IHRA (2016).")
     st.markdown('<span class="caption">Demo para evaluación y fines educativos. No reemplaza moderación humana.</span>', unsafe_allow_html=True)
     st.markdown('<div class="footer">© 2025 SemitIA · IHRA-based classification · Demo</div>', unsafe_allow_html=True)
 
-# --- 6) Modo CSV ---
+mode = st.sidebar.radio(
+    "Modo", ["CSV", "Clasificación en vivo", "Estadísticas"],
+    index=["CSV","Clasificación en vivo","Estadísticas"].index(default_mode)
+)
+
+# =========================
+#        MODO CSV
+# =========================
 if mode == "CSV":
     st.title("📊 SemitIA Dashboard – Análisis IHRA de Tuits")
     st.caption("Clasificación automática de antisemitismo (0–3) según IHRA")
@@ -106,7 +116,6 @@ if mode == "CSV":
     if uploaded:
         df = pd.read_csv(uploaded)
 
-        # Botón de descarga del mismo CSV (o enriquecido si le agregás columnas)
         st.download_button(
             "💾 Descargar CSV enriquecido",
             data=df.to_csv(index=False).encode("utf-8"),
@@ -114,7 +123,6 @@ if mode == "CSV":
             mime="text/csv"
         )
 
-        # Validaciones suaves
         cols_requeridas = {"texto", "etiqueta_gpt", "subtipo_gpt", "confidence_gpt", "reason_gpt"}
         faltantes = cols_requeridas - set(df.columns)
         if faltantes:
@@ -124,7 +132,6 @@ if mode == "CSV":
         st.subheader("Datos generales")
         st.write(f"Tuits analizados: {len(df)}")
 
-        # Distribución general
         st.subheader("Distribución de clasificaciones (IHRA 0–3)")
         conteo = df["etiqueta_gpt"].value_counts().sort_index()
         fig, ax = plt.subplots()
@@ -133,7 +140,6 @@ if mode == "CSV":
         ax.set_ylabel("Cantidad de tuits")
         st.pyplot(fig)
 
-        # Filtro por categoría
         opciones = sorted(df["etiqueta_gpt"].dropna().unique())
         opcion = st.selectbox("🔍 Filtrar por categoría (0–3):", opciones)
         filtrados = df[df["etiqueta_gpt"] == opcion]
@@ -142,17 +148,17 @@ if mode == "CSV":
     else:
         st.info("⬆️ Subí un CSV con tus clasificaciones (por ejemplo, `tuits_clasificados_final.csv`).")
 
-# --- 7) Modo Clasificación en vivo ---
+# ===============================
+#   MODO CLASIFICACIÓN EN VIVO
+# ===============================
 elif mode == "Clasificación en vivo":
     st.header("🔎 Clasificación IHRA en vivo")
 
-    # Diagnóstico rápido
     with st.expander("⚙️ Diagnóstico de conexión"):
         st.write("API_ENDPOINT:", API_ENDPOINT or "—")
         st.write("API_BASE:", API_BASE or "—")
         st.write("URL destino:", get_classify_url() or "❌ no configurada")
 
-    # Ejemplos rápidos
     ejemplos = {
         "0 · Neutro": "Hoy se recuerda el Holocausto.",
         "1 · Crítica política": "El gobierno de Israel actúa de forma desproporcionada.",
@@ -195,7 +201,6 @@ elif mode == "Clasificación en vivo":
             st.error(f"Error {r.status_code}: {r.text[:500]}")
         else:
             data = r.json()
-            # Card bonita
             nivel = data.get("label")
             sub = data.get("subtype") or "—"
             rsn = data.get("reason") or "—"
@@ -210,14 +215,15 @@ elif mode == "Clasificación en vivo":
             </div>
             """, unsafe_allow_html=True)
 
-            # Métricas
             col1, col2, col3 = st.columns(3)
             col1.metric("Nivel IHRA", nivel if nivel is not None else "—")
             col2.metric("Confianza", f"{conf*100:.1f}%" if isinstance(conf,(int,float)) else "—")
             col3.metric("Tiempo", f"{data.get('elapsed_ms', elapsed)} ms")
             st.caption(f"IHRA version: {data.get('ihra_version','—')}")
 
-# --- 8) Modo Estadísticas ---
+# =========================
+#         ESTADÍSTICAS
+# =========================
 elif mode == "Estadísticas":
     st.header("📈 Estadísticas globales (v1)")
     url_stats = get_stats_url()

@@ -69,30 +69,62 @@ def get_classify_candidates():
 
 def post_classify_with_fallback(payload: dict, headers: dict, timeout: int = 20):
     """
-    Intenta POST contra las rutas candidatas hasta obtener 200.
-    Si 404, prueba la siguiente. Si 401/403, muestra error de auth.
+    Intenta POST contra varias rutas candidatas. Si 200 pero no es JSON válido, muestra
+    un error claro con un snippet de la respuesta para depurar (HTML, vacío, etc.).
     Devuelve (data_json, url_usada, elapsed_ms) o levanta RuntimeError.
     """
     last_err = None
-    for url in get_classify_candidates():
+    candidates = get_classify_candidates()
+    # Asegura que pedimos JSON
+    headers = dict(headers or {})
+    headers.setdefault("Accept", "application/json")
+
+    for url in candidates:
         t0 = time.time()
         try:
             r = requests.post(url, headers=headers, json=payload, timeout=timeout)
             elapsed = int((time.time() - t0) * 1000)
         except Exception as e:
-            last_err = e
+            last_err = f"Conexión fallida a {url}: {e}"
             continue
 
+        ct = (r.headers.get("Content-Type") or "").lower()
+
         if r.status_code == 200:
-            return r.json(), url, elapsed
+            # Intentar parsear JSON; si no se puede, mostrar snippet del body
+            try:
+                data = r.json()
+            except ValueError:
+                body = (r.text or "").strip()
+                snippet = (body[:300] + "...") if len(body) > 300 else body or "<vacío>"
+                raise RuntimeError(
+                    f"Respuesta 200 pero no-JSON desde {url} (Content-Type='{ct}'). "
+                    f"Snippet: {snippet}"
+                )
+            # Opcional: validar estructura mínima
+            if not isinstance(data, dict) or "label" not in data:
+                raise RuntimeError(
+                    f"JSON inesperado desde {url}: {str(data)[:300]}"
+                )
+            return data, url, elapsed
+
         elif r.status_code in (401, 403):
-            st.error(f"Auth error {r.status_code} en {url}. Revisá API_TOKEN/Authorization.")
-            return None, url, elapsed
+            raise RuntimeError(
+                f"Auth error {r.status_code} en {url}. Revisá API_TOKEN/Authorization."
+            )
+
         elif r.status_code == 404:
-            last_err = f"404 en {url}"
+            last_err = f"404 Not Found en {url}"
             continue
+
+        elif r.status_code == 204:
+            last_err = f"204 No Content en {url} (sin body)"
+            continue
+
         else:
-            last_err = f"{r.status_code}: {r.text[:300]} en {url}"
+            body = (r.text or "").strip()
+            snippet = (body[:300] + "...") if len(body) > 300 else body or "<vacío>"
+            last_err = f"{r.status_code} en {url}. Snippet: {snippet}"
             continue
 
     raise RuntimeError(f"No se pudo clasificar. Último error: {last_err}")

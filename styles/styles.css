@@ -1,3 +1,5 @@
+mv styles/styles.css styles.css
+rmdir styles
 /* ===== Base clara ===== */
 html, body, [data-testid="stAppViewContainer"] {
   background-color: #FFFFFF !important;

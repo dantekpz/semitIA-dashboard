@@ -4,6 +4,14 @@ import streamlit as st, requests, pandas as pd, matplotlib.pyplot as plt
 # 🔒 Leemos las variables seguras desde Streamlit Secrets
 API_BASE = st.secrets.get("API_BASE", "http://localhost:8001")
 API_TOKEN = st.secrets.get("API_TOKEN", None)
+st.sidebar.title("SemitIA")
+mode = st.sidebar.radio("Modo", ["CSV", "Clasificación en vivo", "Estadísticas"])
+
+if mode == "Clasificación en vivo":
+    st.header("🔎 Clasificación IHRA en vivo")
+    texto = st.text_area("Pegá un tuit o texto corto en español", height=140)
+    if st.button("Clasificar", type="primary"):
+        ...
 
 # Encabezados HTTP para la API
 HEADERS = {"Content-Type": "application/json"}

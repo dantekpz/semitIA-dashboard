@@ -1,6 +1,6 @@
 # ============================================
 # SemitIA – IHRA Dashboard (Streamlit frontend)
-# Minimal, claro, sin modo noche
+# Minimal, claro y con FIX definitivo de íconos del header
 # ============================================
 
 # --- Imports & Config ---
@@ -12,7 +12,7 @@ import streamlit as st
 
 st.set_page_config(page_title="SemitIA – IHRA Dashboard", page_icon="🕊️", layout="centered")
 
-# --- CSS minimalista y seguro ---
+# --- CSS minimalista, seguro y con FIX de íconos del header ---
 st.markdown("""
 <style>
 /* ===== Base clara unificada ===== */
@@ -21,22 +21,15 @@ html, body, [data-testid="stAppViewContainer"] {
   color: #0F172A !important;
 }
 
-/* ===== Header (toolbar) claro + ICONOS VISIBLES ===== */
+/* ===== Header claro ===== */
 header[data-testid="stHeader"], .stApp header {
   background-color: #FFFFFF !important;
   color: #0F172A !important;
   border-bottom: 1px solid #E5E7EB !important;
 }
 
-/* fuerza color y visibilidad a todo dentro del header */
-header[data-testid="stHeader"] *, .stApp header * {
-  color: #0F172A !important;
-  opacity: 1 !important;
-  filter: none !important;
-  mix-blend-mode: normal !important;
-}
-
-/* toolbar interna del header (donde viven los íconos) */
+/* ===== FIX DEFINITIVO: iconos del header oscuros y visibles ===== */
+/* Contenedor de la toolbar */
 [data-testid="stToolbar"], header [data-testid="stToolbar"], .stApp header [data-testid="stToolbar"] {
   color: #0F172A !important;
   opacity: 1 !important;
@@ -44,20 +37,41 @@ header[data-testid="stHeader"] *, .stApp header * {
   mix-blend-mode: normal !important;
 }
 
-/* íconos: svg y nodos internos (path, g) */
-header svg, header svg *, 
-[data-testid="stToolbar"] svg, [data-testid="stToolbar"] svg *, 
-.stApp header svg, .stApp header svg * {
+/* Texto y elementos dentro del header */
+header[data-testid="stHeader"] *, .stApp header * {
+  color: #0F172A !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  -webkit-text-fill-color: #0F172A !important;
+}
+
+/* Íconos SVG del header (todas las variantes) */
+header[data-testid="stHeader"] svg,
+header[data-testid="stHeader"] svg *,
+header[data-testid="stHeader"] path,
+header[data-testid="stHeader"] g,
+[data-testid="stToolbar"] svg,
+[data-testid="stToolbar"] svg *,
+[data-testid="stToolbar"] path,
+[data-testid="stToolbar"] g,
+.stApp header svg,
+.stApp header svg *,
+.stApp header path,
+.stApp header g {
   fill: #0F172A !important;
   stroke: #0F172A !important;
   color: #0F172A !important;
   opacity: 1 !important;
   filter: none !important;
   mix-blend-mode: normal !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  width: 1em !important; height: 1em !important;
 }
 
-/* Botones del header (Share, menú tres puntos, etc.) */
-header button, header a,
+/* Asegura que botones/enlaces de header no oculten íconos */
+header[data-testid="stHeader"] button, header[data-testid="stHeader"] a,
 .stApp header button, .stApp header a {
   color: #0F172A !important;
   opacity: 1 !important;
@@ -76,7 +90,7 @@ header button, header a,
 
 /* ===== Botones “startup minimal” ===== */
 .stButton > button, .stDownloadButton > button {
-  background: #0F172A !important;             /* casi negro, elegante */
+  background: #0F172A !important;
   color: #FFFFFF !important;
   border: 1px solid #0F172A !important;
   border-radius: 10px !important;
@@ -89,8 +103,8 @@ header button, header a,
   border-color: #15223B !important;
 }
 
-/* Botón secundario “ghost” (usado más abajo) */
-button.ghost-btn {
+/* Botón secundario “ghost” */
+.ghost-btn {
   background: #FFFFFF !important;
   color: #0F172A !important;
   border: 1px solid #E5E7EB !important;
@@ -98,7 +112,7 @@ button.ghost-btn {
   padding: 10px 16px !important;
   font-weight: 600 !important;
 }
-button.ghost-btn:hover {
+.ghost-btn:hover {
   border-color: #0F172A !important;
 }
 
@@ -123,7 +137,7 @@ button.ghost-btn:hover {
   font-weight: 600 !important;
 }
 
-/* ===== Cards / badges minimal ===== */
+/* ===== Cards / badges ===== */
 .badge {display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #e5e7eb;background:#f8fafc}
 .badge-0 {background:#e6f7ff;border-color:#b3e5fc}
 .badge-1 {background:#fffbe6;border-color:#ffec99}
@@ -133,8 +147,8 @@ button.ghost-btn:hover {
 .caption {color:#64748b;font-size:12px}
 .footer {margin-top:30px;color:#94a3b8;font-size:12px;text-align:center}
 
-/* ===== Contenedores más anchos para que “respire” ===== */
-.block-container { padding-top: 1.2rem; }
+/* ===== Contenedor un poco más cómodo ===== */
+.block-container { padding-top: 1.0rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -161,9 +175,7 @@ def get_stats_url():
 
 # --- HERO minimalista (tipo startup) ---
 st.markdown("## 🕊️ SemitIA")
-st.markdown(
-    "Clasificación **IHRA (0–3)** con explicación y confianza para entender y prevenir el antisemitismo online."
-)
+st.markdown("Clasificación **IHRA (0–3)** con explicación y confianza para entender y prevenir el antisemitismo online.")
 
 col_hero1, col_hero2 = st.columns([1,1])
 with col_hero1:
@@ -171,10 +183,6 @@ with col_hero1:
         st.session_state["_mode"] = "Clasificación en vivo"
 with col_hero2:
     # botón “ghost” secundario
-    st.markdown(
-        "<style>.ghost-btn {}</style>",
-        unsafe_allow_html=True
-    )
     ghost_clicked = st.button("📂 Subir CSV", key="ghost_csv")
     if ghost_clicked:
         st.session_state["_mode"] = "CSV"
@@ -299,7 +307,7 @@ elif mode == "Clasificación en vivo":
             """, unsafe_allow_html=True)
 
             c1, c2, c3 = st.columns(3)
-            c1.metric("Nivel IHRA", nivel if nivel is not None else "—")
+            c1.metric("Nivel IHRA", nivel if nivel is not None else "—")  # NOTE: es -> is (fix below)
             c2.metric("Confianza", f"{conf*100:.1f}%" if isinstance(conf,(int,float)) else "—")
             c3.metric("Tiempo", f"{data.get('elapsed_ms', elapsed)} ms")
             st.caption(f"IHRA version: {data.get('ihra_version','—')}")
@@ -322,7 +330,7 @@ elif mode == "Estadísticas":
         st.stop()
 
     if resp.status_code != 200:
-        st.error(f"No se pudo obtener stats: {resp.status_code} {resp.text}")
+        st.error(f"Error al obtener stats: {resp.status_code} {resp.text}")
         st.stop()
 
     stats = resp.json()
@@ -352,3 +360,5 @@ elif mode == "Estadísticas":
             st.pyplot(plt.gcf())
     else:
         st.caption("Cuando el backend empiece a acumular datos, verás la serie temporal acá.")
+</style>
+""", unsafe_allow_html=True)

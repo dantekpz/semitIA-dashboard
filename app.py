@@ -11,14 +11,9 @@ import streamlit as st
 
 st.set_page_config(page_title="SemitIA – IHRA Dashboard", page_icon="🕊️", layout="centered")
 
-# --- Base CSS (claro por defecto) ---
+# --- CSS mínimo (no toca fondos ni sidebar; look limpio) ---
 st.markdown("""
 <style>
-/* Fuerza fondo claro por defecto */
-html, body, [data-testid="stAppViewContainer"] { background: #FFFFFF !important; color:#0F172A !important; }
-[data-testid="stSidebar"] { background:#F7F9FC !important; }
-
-/* UI helpers */
 .badge {display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #e5e7eb;background:#f8fafc}
 .badge-0 {background:#e6f7ff;border-color:#b3e5fc}
 .badge-1 {background:#fffbe6;border-color:#ffec99}
@@ -30,6 +25,15 @@ html, body, [data-testid="stAppViewContainer"] { background: #FFFFFF !important;
 .hero {padding:18px 20px;border-radius:18px;background:#F7F9FC;border:1px solid #eaecef}
 </style>
 """, unsafe_allow_html=True)
+
+# --- Opcional: ocultar header/menú nativos de Streamlit ---
+# st.markdown("""
+# <style>
+# #MainMenu {visibility: hidden;}
+# header {visibility: hidden;}
+# footer {visibility: hidden;}
+# </style>
+# """, unsafe_allow_html=True)
 
 # --- Secrets (backend URL / token) ---
 API_BASE = st.secrets.get("API_BASE")          # ej: https://tu-backend.app
@@ -52,21 +56,26 @@ def get_classify_url():
 def get_stats_url():
     return f"{API_BASE}/api/stats" if API_BASE else None
 
-# --- Sidebar: brand + night mode toggle + mode selector ---
+# --- Sidebar: brand + night mode toggle + info + selector ---
 st.sidebar.title("SemitIA")
 dark = st.sidebar.toggle("🌙 Modo noche", value=False)
 
-# Si activan modo noche, sobreescribimos estilos
+# Solo si activan modo noche, aplicamos estilos oscuros (sin tocar tema claro por defecto)
 if dark:
     st.markdown("""
     <style>
-    html, body, [data-testid="stAppViewContainer"] { background:#0B1220 !important; color:#E5E7EB !important; }
-    [data-testid="stSidebar"] { background:#0F172A !important; }
+    [data-testid="stAppViewContainer"] { background:#0B1220 !important; color:#E5E7EB !important; }
+    [data-testid="stSidebar"] { background:#0F172A !important; color:#E5E7EB !important; }
     .card { background:#0F172A !important; border-color:#1F2937 !important; }
     .badge { background:#111827 !important; border-color:#374151 !important; color:#E5E7EB !important; }
     .caption, .footer { color:#9CA3AF !important; }
     </style>
     """, unsafe_allow_html=True)
+
+with st.sidebar.expander("Acerca de SemitIA"):
+    st.markdown("Clasificación automática del discurso sobre judíos/Israel según la definición IHRA (2016).")
+    st.markdown('<span class="caption">Demo para evaluación y fines educativos. No reemplaza moderación humana.</span>', unsafe_allow_html=True)
+    st.markdown('<div class="footer">© 2025 SemitIA · IHRA-based classification · Demo</div>', unsafe_allow_html=True)
 
 # --- Hero (portada) ---
 with st.container():
@@ -93,12 +102,6 @@ with st.container():
         """, unsafe_allow_html=True)
 
 default_mode = st.session_state.get("_mode", "CSV")
-
-# --- Sidebar info + selector de modo ---
-with st.sidebar.expander("Acerca de SemitIA"):
-    st.markdown("Clasificación automática del discurso sobre judíos/Israel según la definición IHRA (2016).")
-    st.markdown('<span class="caption">Demo para evaluación y fines educativos. No reemplaza moderación humana.</span>', unsafe_allow_html=True)
-    st.markdown('<div class="footer">© 2025 SemitIA · IHRA-based classification · Demo</div>', unsafe_allow_html=True)
 
 mode = st.sidebar.radio(
     "Modo", ["CSV", "Clasificación en vivo", "Estadísticas"],

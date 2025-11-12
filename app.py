@@ -1,6 +1,6 @@
 # ============================================
 # SemitIA – IHRA Dashboard (Streamlit frontend)
-# Claro, estable y sin modo noche
+# Minimal, claro, sin modo noche
 # ============================================
 
 # --- Imports & Config ---
@@ -12,90 +12,118 @@ import streamlit as st
 
 st.set_page_config(page_title="SemitIA – IHRA Dashboard", page_icon="🕊️", layout="centered")
 
-# --- CSS: claro, botones visibles, uploader legible, iconos del header OK ---
+# --- CSS minimalista y seguro ---
 st.markdown("""
 <style>
-/* Fondo y texto base */
+/* ===== Base clara unificada ===== */
 html, body, [data-testid="stAppViewContainer"] {
   background-color: #FFFFFF !important;
   color: #0F172A !important;
 }
 
-/* Header claro + iconos visibles */
+/* ===== Header (toolbar) claro + ICONOS VISIBLES ===== */
 header[data-testid="stHeader"], .stApp header {
   background-color: #FFFFFF !important;
   color: #0F172A !important;
   border-bottom: 1px solid #E5E7EB !important;
 }
+
+/* fuerza color y visibilidad a todo dentro del header */
 header[data-testid="stHeader"] *, .stApp header * {
   color: #0F172A !important;
   opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
 }
-header[data-testid="stHeader"] a, header[data-testid="stHeader"] button,
-.stApp header a, .stApp header button {
+
+/* toolbar interna del header (donde viven los íconos) */
+[data-testid="stToolbar"], header [data-testid="stToolbar"], .stApp header [data-testid="stToolbar"] {
   color: #0F172A !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
 }
-header[data-testid="stHeader"] svg, .stApp header svg {
+
+/* íconos: svg y nodos internos (path, g) */
+header svg, header svg *, 
+[data-testid="stToolbar"] svg, [data-testid="stToolbar"] svg *, 
+.stApp header svg, .stApp header svg * {
   fill: #0F172A !important;
   stroke: #0F172A !important;
+  color: #0F172A !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+/* Botones del header (Share, menú tres puntos, etc.) */
+header button, header a,
+.stApp header button, .stApp header a {
+  color: #0F172A !important;
   opacity: 1 !important;
   filter: none !important;
 }
 
-/* Sidebar claro */
+/* ===== Sidebar claro ===== */
 [data-testid="stSidebar"] {
   background-color: #F7F9FC !important;
   color: #0F172A !important;
 }
 [data-testid="stSidebar"] * { color: #0F172A !important; }
-[data-testid="stSidebar"] svg { fill: #0F172A !important; stroke: #0F172A !important; }
+[data-testid="stSidebar"] svg, [data-testid="stSidebar"] svg * {
+  fill: #0F172A !important; stroke: #0F172A !important;
+}
 
-/* Botones globales (streamlit buttons y download) */
+/* ===== Botones “startup minimal” ===== */
 .stButton > button, .stDownloadButton > button {
-  background: #2F6FED !important;
+  background: #0F172A !important;             /* casi negro, elegante */
   color: #FFFFFF !important;
-  border: 1px solid #2F6FED !important;
+  border: 1px solid #0F172A !important;
   border-radius: 10px !important;
-  padding: 8px 14px !important;
+  padding: 10px 16px !important;
   font-weight: 600 !important;
+  letter-spacing: 0.2px !important;
 }
 .stButton > button:hover, .stDownloadButton > button:hover {
-  background: #1F56D8 !important;
-  border-color: #1F56D8 !important;
+  background: #15223B !important;
+  border-color: #15223B !important;
 }
 
-/* Variante secundaria (aplicada a botones dentro de cards si fuese necesario) */
-button.secondary-btn {
+/* Botón secundario “ghost” (usado más abajo) */
+button.ghost-btn {
   background: #FFFFFF !important;
-  color: #2F6FED !important;
-  border: 1px solid #2F6FED !important;
+  color: #0F172A !important;
+  border: 1px solid #E5E7EB !important;
+  border-radius: 10px !important;
+  padding: 10px 16px !important;
+  font-weight: 600 !important;
+}
+button.ghost-btn:hover {
+  border-color: #0F172A !important;
 }
 
-/* File Uploader: caja clara, borde punteado, textos visibles */
+/* ===== File Uploader moderno ===== */
 [data-testid="stFileUploaderDropzone"] {
   background: #FFFFFF !important;
   border: 2px dashed #CBD5E1 !important;
   color: #0F172A !important;
-  border-radius: 12px !important;
+  border-radius: 14px !important;
 }
-[data-testid="stFileUploaderDropzone"] * {
-  color: #0F172A !important;
+[data-testid="stFileUploaderDropzone"] * { color: #0F172A !important; }
+[data-testid="stFileUploaderDropzone"] svg,
+[data-testid="stFileUploaderDropzone"] svg * {
+  fill: #0F172A !important; stroke: #0F172A !important;
 }
-[data-testid="stFileUploaderDropzone"] svg {
-  fill: #2F6FED !important;
-  stroke: #2F6FED !important;
-}
-/* Botón interno del uploader (Browse files) */
 [data-testid="stFileUploaderDropzone"] button {
-  background: #2F6FED !important;
+  background: #0F172A !important;
   color: #FFFFFF !important;
-  border: 1px solid #2F6FED !important;
+  border: 1px solid #0F172A !important;
   border-radius: 10px !important;
-  padding: 6px 12px !important;
+  padding: 8px 14px !important;
   font-weight: 600 !important;
 }
 
-/* Cards / badges */
+/* ===== Cards / badges minimal ===== */
 .badge {display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #e5e7eb;background:#f8fafc}
 .badge-0 {background:#e6f7ff;border-color:#b3e5fc}
 .badge-1 {background:#fffbe6;border-color:#ffec99}
@@ -104,6 +132,9 @@ button.secondary-btn {
 .card {border:1px solid #eaecef;border-radius:16px;padding:14px;background:#ffffff}
 .caption {color:#64748b;font-size:12px}
 .footer {margin-top:30px;color:#94a3b8;font-size:12px;text-align:center}
+
+/* ===== Contenedores más anchos para que “respire” ===== */
+.block-container { padding-top: 1.2rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -128,17 +159,25 @@ def get_classify_url():
 def get_stats_url():
     return f"{API_BASE}/api/stats" if API_BASE else None
 
-# --- Hero (conciso) ---
-with st.container():
-    st.markdown("### 🕊️ SemitIA")
-    st.markdown("**IA para entender y prevenir el antisemitismo online** · Clasificación IHRA (0–3) con explicación y confianza.")
-    c1, c2, _ = st.columns([1,1,6])
-    with c1:
-        if st.button("▶️ Demo en vivo", type="primary"):
-            st.session_state["_mode"] = "Clasificación en vivo"
-    with c2:
-        if st.button("📂 Subir CSV"):
-            st.session_state["_mode"] = "CSV"
+# --- HERO minimalista (tipo startup) ---
+st.markdown("## 🕊️ SemitIA")
+st.markdown(
+    "Clasificación **IHRA (0–3)** con explicación y confianza para entender y prevenir el antisemitismo online."
+)
+
+col_hero1, col_hero2 = st.columns([1,1])
+with col_hero1:
+    if st.button("▶️ Demo en vivo"):
+        st.session_state["_mode"] = "Clasificación en vivo"
+with col_hero2:
+    # botón “ghost” secundario
+    st.markdown(
+        "<style>.ghost-btn {}</style>",
+        unsafe_allow_html=True
+    )
+    ghost_clicked = st.button("📂 Subir CSV", key="ghost_csv")
+    if ghost_clicked:
+        st.session_state["_mode"] = "CSV"
 
 default_mode = st.session_state.get("_mode", "CSV")
 
@@ -156,21 +195,20 @@ with st.sidebar.expander("Acerca de"):
 #        MODO CSV
 # =========================
 if mode == "CSV":
-    st.markdown("## 📊 Análisis IHRA de Tuits (CSV)")
+    st.markdown("### 📊 Análisis IHRA de Tuits (CSV)")
     st.caption("Subí un CSV con columnas: `texto, etiqueta_gpt, subtipo_gpt, confidence_gpt, reason_gpt`.")
 
     uploaded = st.file_uploader("Arrastrá y soltá el archivo, o haz clic en **Elegir archivo**", type=["csv"])
     if uploaded:
         df = pd.read_csv(uploaded)
 
-        # Validación de columnas
+        # Validación
         cols_requeridas = {"texto", "etiqueta_gpt", "subtipo_gpt", "confidence_gpt", "reason_gpt"}
         faltantes = cols_requeridas - set(df.columns)
         if faltantes:
             st.error(f"Faltan columnas en el CSV: {', '.join(sorted(faltantes))}")
             st.stop()
 
-        # Botón de descarga
         st.download_button(
             "💾 Descargar CSV enriquecido",
             data=df.to_csv(index=False).encode("utf-8"),
@@ -178,11 +216,9 @@ if mode == "CSV":
             mime="text/csv"
         )
 
-        # Datos generales
         st.subheader("Datos generales")
         st.write(f"Tuits analizados: **{len(df)}**")
 
-        # Distribución general
         st.subheader("Distribución de clasificaciones (IHRA 0–3)")
         conteo = df["etiqueta_gpt"].value_counts().sort_index()
         fig, ax = plt.subplots()
@@ -191,7 +227,6 @@ if mode == "CSV":
         ax.set_ylabel("Cantidad de tuits")
         st.pyplot(fig)
 
-        # Filtro por categoría
         opciones = sorted(df["etiqueta_gpt"].dropna().unique())
         opcion = st.selectbox("🔍 Filtrar por categoría (0–3):", opciones)
         filtrados = df[df["etiqueta_gpt"] == opcion]
@@ -204,15 +239,13 @@ if mode == "CSV":
 #   MODO CLASIFICACIÓN EN VIVO
 # ===============================
 elif mode == "Clasificación en vivo":
-    st.markdown("## 🔎 Clasificación IHRA en vivo")
+    st.markdown("### 🔎 Clasificación IHRA en vivo")
 
-    # Diagnóstico de conexión
     with st.expander("⚙️ Diagnóstico"):
         st.write("API_ENDPOINT:", API_ENDPOINT or "—")
         st.write("API_BASE:", API_BASE or "—")
         st.write("URL destino:", get_classify_url() or "❌ no configurada")
 
-    # Ejemplos
     ejemplos = {
         "0 · Neutro": "Hoy se recuerda el Holocausto.",
         "1 · Crítica política": "El gobierno de Israel actúa de forma desproporcionada.",
@@ -226,7 +259,7 @@ elif mode == "Clasificación en vivo":
     texto = st.text_area("Pegá un tuit o texto corto en español", height=140, value=st.session_state.get("_texto_demo",""))
     timeout_s = st.slider("⏱️ Timeout (segundos)", 5, 60, 20)
 
-    if st.button("Clasificar", type="primary"):
+    if st.button("Clasificar"):
         url = get_classify_url()
         if not url:
             st.error("No hay URL configurada. Definí `API_ENDPOINT` o `API_BASE` en Secrets.")
@@ -275,7 +308,7 @@ elif mode == "Clasificación en vivo":
 #         ESTADÍSTICAS
 # =========================
 elif mode == "Estadísticas":
-    st.markdown("## 📈 Estadísticas globales (v1)")
+    st.markdown("### 📈 Estadísticas globales (v1)")
     url_stats = get_stats_url()
     if not url_stats:
         st.info("Configura API_BASE en Secrets para habilitar /api/stats.")

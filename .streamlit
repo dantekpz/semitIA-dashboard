@@ -1,0 +1,7 @@
+config.toml
+[theme]
+base="light"
+primaryColor="#2F6FED"
+backgroundColor="#FFFFFF"
+secondaryBackgroundColor="#F7F9FC"
+textColor="#0F172A"

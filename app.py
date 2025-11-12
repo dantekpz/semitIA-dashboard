@@ -1,6 +1,6 @@
 # ============================================
 # SemitIA – IHRA Dashboard (Streamlit frontend)
-# Limpio, sin modo noche y con estilos seguros
+# Claro, estable y sin modo noche
 # ============================================
 
 # --- Imports & Config ---
@@ -12,16 +12,16 @@ import streamlit as st
 
 st.set_page_config(page_title="SemitIA – IHRA Dashboard", page_icon="🕊️", layout="centered")
 
-# --- CSS claro, seguro y minimalista (no rompe iconos/menus) ---
+# --- CSS: claro, botones visibles, uploader legible, iconos del header OK ---
 st.markdown("""
 <style>
-/* Fondo principal y contenedor */
+/* Fondo y texto base */
 html, body, [data-testid="stAppViewContainer"] {
   background-color: #FFFFFF !important;
   color: #0F172A !important;
 }
 
-/* Header (toolbar) claro con iconos visibles */
+/* Header claro + iconos visibles */
 header[data-testid="stHeader"], .stApp header {
   background-color: #FFFFFF !important;
   color: #0F172A !important;
@@ -29,26 +29,73 @@ header[data-testid="stHeader"], .stApp header {
 }
 header[data-testid="stHeader"] *, .stApp header * {
   color: #0F172A !important;
+  opacity: 1 !important;
+}
+header[data-testid="stHeader"] a, header[data-testid="stHeader"] button,
+.stApp header a, .stApp header button {
+  color: #0F172A !important;
 }
 header[data-testid="stHeader"] svg, .stApp header svg {
   fill: #0F172A !important;
   stroke: #0F172A !important;
+  opacity: 1 !important;
+  filter: none !important;
 }
 
-/* Sidebar claro + texto/iconos visibles */
+/* Sidebar claro */
 [data-testid="stSidebar"] {
   background-color: #F7F9FC !important;
   color: #0F172A !important;
 }
-[data-testid="stSidebar"] * {
-  color: #0F172A !important;
+[data-testid="stSidebar"] * { color: #0F172A !important; }
+[data-testid="stSidebar"] svg { fill: #0F172A !important; stroke: #0F172A !important; }
+
+/* Botones globales (streamlit buttons y download) */
+.stButton > button, .stDownloadButton > button {
+  background: #2F6FED !important;
+  color: #FFFFFF !important;
+  border: 1px solid #2F6FED !important;
+  border-radius: 10px !important;
+  padding: 8px 14px !important;
+  font-weight: 600 !important;
 }
-[data-testid="stSidebar"] svg {
-  fill: #0F172A !important;
-  stroke: #0F172A !important;
+.stButton > button:hover, .stDownloadButton > button:hover {
+  background: #1F56D8 !important;
+  border-color: #1F56D8 !important;
 }
 
-/* Helpers visuales (no tocan layout base) */
+/* Variante secundaria (aplicada a botones dentro de cards si fuese necesario) */
+button.secondary-btn {
+  background: #FFFFFF !important;
+  color: #2F6FED !important;
+  border: 1px solid #2F6FED !important;
+}
+
+/* File Uploader: caja clara, borde punteado, textos visibles */
+[data-testid="stFileUploaderDropzone"] {
+  background: #FFFFFF !important;
+  border: 2px dashed #CBD5E1 !important;
+  color: #0F172A !important;
+  border-radius: 12px !important;
+}
+[data-testid="stFileUploaderDropzone"] * {
+  color: #0F172A !important;
+}
+[data-testid="stFileUploaderDropzone"] svg {
+  fill: #2F6FED !important;
+  stroke: #2F6FED !important;
+}
+/* Botón interno del uploader (Browse files) */
+[data-testid="stFileUploaderDropzone"] button {
+  background: #2F6FED !important;
+  color: #FFFFFF !important;
+  border: 1px solid #2F6FED !important;
+  border-radius: 10px !important;
+  padding: 6px 12px !important;
+  font-weight: 600 !important;
+}
+
+/* Cards / badges */
 .badge {display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #e5e7eb;background:#f8fafc}
 .badge-0 {background:#e6f7ff;border-color:#b3e5fc}
 .badge-1 {background:#fffbe6;border-color:#ffec99}
@@ -57,16 +104,6 @@ header[data-testid="stHeader"] svg, .stApp header svg {
 .card {border:1px solid #eaecef;border-radius:16px;padding:14px;background:#ffffff}
 .caption {color:#64748b;font-size:12px}
 .footer {margin-top:30px;color:#94a3b8;font-size:12px;text-align:center}
-
-/* Botones tipo CTA (HTML) */
-.cta-btn {
-  display:inline-block; padding:10px 14px; border-radius:10px;
-  border:1px solid #2F6FED; background:#2F6FED; color:#fff; text-decoration:none;
-  font-weight:600;
-}
-.cta-btn.secondary {
-  background:#fff; color:#2F6FED; border:1px solid #2F6FED;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -91,11 +128,11 @@ def get_classify_url():
 def get_stats_url():
     return f"{API_BASE}/api/stats" if API_BASE else None
 
-# --- Hero (portada simple y prolija) ---
+# --- Hero (conciso) ---
 with st.container():
     st.markdown("### 🕊️ SemitIA")
     st.markdown("**IA para entender y prevenir el antisemitismo online** · Clasificación IHRA (0–3) con explicación y confianza.")
-    c1, c2, c3 = st.columns([1,1,6])
+    c1, c2, _ = st.columns([1,1,6])
     with c1:
         if st.button("▶️ Demo en vivo", type="primary"):
             st.session_state["_mode"] = "Clasificación en vivo"
@@ -105,7 +142,7 @@ with st.container():
 
 default_mode = st.session_state.get("_mode", "CSV")
 
-# --- Sidebar (selector de modo + about) ---
+# --- Sidebar (modo + about) ---
 st.sidebar.title("SemitIA")
 mode = st.sidebar.radio(
     "Modo", ["CSV", "Clasificación en vivo", "Estadísticas"],
@@ -122,7 +159,7 @@ if mode == "CSV":
     st.markdown("## 📊 Análisis IHRA de Tuits (CSV)")
     st.caption("Subí un CSV con columnas: `texto, etiqueta_gpt, subtipo_gpt, confidence_gpt, reason_gpt`.")
 
-    uploaded = st.file_uploader("📁 Subí tu CSV clasificado", type=["csv"])
+    uploaded = st.file_uploader("Arrastrá y soltá el archivo, o haz clic en **Elegir archivo**", type=["csv"])
     if uploaded:
         df = pd.read_csv(uploaded)
 
@@ -161,7 +198,7 @@ if mode == "CSV":
         st.write(f"Mostrando **{len(filtrados)}** tuits")
         st.dataframe(filtrados[["texto", "subtipo_gpt", "confidence_gpt", "reason_gpt"]], use_container_width=True)
     else:
-        st.info("⬆️ Subí un CSV con tus clasificaciones.")
+        st.info("⬆️ Arrastrá tu CSV o haz clic en **Elegir archivo**.")
 
 # ===============================
 #   MODO CLASIFICACIÓN EN VIVO

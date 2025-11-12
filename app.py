@@ -11,9 +11,32 @@ import streamlit as st
 
 st.set_page_config(page_title="SemitIA – IHRA Dashboard", page_icon="🕊️", layout="centered")
 
-# --- CSS mínimo (no toca fondos ni sidebar; look limpio) ---
+# --- CSS base (header + centro blancos unificados) ---
 st.markdown("""
 <style>
+/* Fondo general y contenedor central */
+html, body, [data-testid="stAppViewContainer"] {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+/* Sidebar claro */
+[data-testid="stSidebar"] {
+  background-color: #F7F9FC !important;
+}
+
+/* Header superior (viewer toolbar) blanco */
+header[data-testid="stHeader"], .stApp header {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-bottom: 1px solid #E5E7EB !important; /* separador sutil */
+}
+.stApp header::before, .stApp header::after {
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* Helpers visuales */
 .badge {display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #e5e7eb;background:#f8fafc}
 .badge-0 {background:#e6f7ff;border-color:#b3e5fc}
 .badge-1 {background:#fffbe6;border-color:#ffec99}
@@ -25,15 +48,6 @@ st.markdown("""
 .hero {padding:18px 20px;border-radius:18px;background:#F7F9FC;border:1px solid #eaecef}
 </style>
 """, unsafe_allow_html=True)
-
-# --- Opcional: ocultar header/menú nativos de Streamlit ---
-# st.markdown("""
-# <style>
-# #MainMenu {visibility: hidden;}
-# header {visibility: hidden;}
-# footer {visibility: hidden;}
-# </style>
-# """, unsafe_allow_html=True)
 
 # --- Secrets (backend URL / token) ---
 API_BASE = st.secrets.get("API_BASE")          # ej: https://tu-backend.app
@@ -56,16 +70,24 @@ def get_classify_url():
 def get_stats_url():
     return f"{API_BASE}/api/stats" if API_BASE else None
 
-# --- Sidebar: brand + night mode toggle + info + selector ---
+# --- Sidebar: brand + night mode + info + selector ---
 st.sidebar.title("SemitIA")
 dark = st.sidebar.toggle("🌙 Modo noche", value=False)
 
-# Solo si activan modo noche, aplicamos estilos oscuros (sin tocar tema claro por defecto)
+# Modo noche (incluye header y centro oscuros)
 if dark:
     st.markdown("""
     <style>
+    /* Centro y texto */
     [data-testid="stAppViewContainer"] { background:#0B1220 !important; color:#E5E7EB !important; }
+    /* Sidebar */
     [data-testid="stSidebar"] { background:#0F172A !important; color:#E5E7EB !important; }
+    /* Header (toolbar) */
+    header[data-testid="stHeader"], .stApp header {
+      background:#0B1220 !important;
+      color:#E5E7EB !important;
+      border-bottom: 1px solid #1F2937 !important;
+    }
     .card { background:#0F172A !important; border-color:#1F2937 !important; }
     .badge { background:#111827 !important; border-color:#374151 !important; color:#E5E7EB !important; }
     .caption, .footer { color:#9CA3AF !important; }

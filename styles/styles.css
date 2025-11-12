@@ -1,0 +1,91 @@
+/* ===== Base clara ===== */
+html, body, [data-testid="stAppViewContainer"] {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+/* ===== Header claro + ICONOS OSCUROS ===== */
+header[data-testid="stHeader"], .stApp header {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-bottom: 1px solid #E5E7EB !important;
+}
+
+/* Fuerza color/visibilidad en toolbar + SVGs */
+[data-testid="stToolbar"], header [data-testid="stToolbar"], .stApp header [data-testid="stToolbar"] {
+  color: #0F172A !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+header[data-testid="stHeader"] svg,
+header[data-testid="stHeader"] svg *,
+[data-testid="stToolbar"] svg,
+[data-testid="stToolbar"] svg *,
+.stApp header svg,
+.stApp header svg * {
+  fill: #0F172A !important;
+  stroke: #0F172A !important;
+  color: #0F172A !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-block !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+/* ===== Sidebar ===== */
+[data-testid="stSidebar"] {
+  background-color: #F7F9FC !important;
+  color: #0F172A !important;
+}
+[data-testid="stSidebar"] * { color: #0F172A !important; }
+
+/* ===== Botones (startup minimal) ===== */
+.stButton > button, .stDownloadButton > button {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  border: 1px solid #0F172A !important;
+  border-radius: 10px !important;
+  padding: 10px 16px !important;
+  font-weight: 600 !important;
+  letter-spacing: .2px !important;
+}
+.stButton > button:hover, .stDownloadButton > button:hover {
+  background: #15223B !important;
+  border-color: #15223B !important;
+}
+
+/* ===== File Uploader claro ===== */
+[data-testid="stFileUploaderDropzone"] {
+  background: #FFFFFF !important;
+  border: 2px dashed #CBD5E1 !important;
+  color: #0F172A !important;
+  border-radius: 14px !important;
+}
+[data-testid="stFileUploaderDropzone"] * { color: #0F172A !important; }
+[data-testid="stFileUploaderDropzone"] svg,
+[data-testid="stFileUploaderDropzone"] svg * {
+  fill: #0F172A !important; stroke: #0F172A !important;
+}
+[data-testid="stFileUploaderDropzone"] button {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  border: 1px solid #0F172A !important;
+  border-radius: 10px !important;
+  padding: 8px 14px !important;
+  font-weight: 600 !important;
+}
+
+/* ===== Cards / badges ===== */
+.badge {display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #e5e7eb;background:#f8fafc}
+.badge-0 {background:#e6f7ff;border-color:#b3e5fc}
+.badge-1 {background:#fffbe6;border-color:#ffec99}
+.badge-2 {background:#fff1f0;border-color:#ffc9c9}
+.badge-3 {background:#ffe7ba;border-color:#ffd8a8}
+.card {border:1px solid #eaecef;border-radius:16px;padding:14px;background:#ffffff}
+.caption {color:#64748b;font-size:12px}
+.footer {margin-top:30px;color:#94a3b8;font-size:12px;text-align:center}
+
+/* Espaciado base */
+.block-container { padding-top: 1rem; }

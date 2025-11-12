@@ -11,27 +11,29 @@ st.set_page_config(page_title="SemitIA – IHRA Dashboard", page_icon="🕊️",
 css_path = Path(__file__).parent / "styles.css"
 if css_path.exists():
  # --- Fix: margen superior para evitar que el header blanco tape el título ---
-st.markdown("""
-    <style>
-    /* Ajusta el contenedor principal */
-    .block-container {
-        padding-top: 6rem !important;   /* subí este valor si sigue muy arriba */
-    }
+# --- Fix visual: separa el contenido del header de Streamlit ---
+if True:  # evita errores de indentación accidental
+    st.markdown("""
+        <style>
+        /* Añade espacio arriba del body para que el header no tape el título */
+        .block-container {
+            padding-top: 6rem !important;  /* subí este valor si sigue muy arriba */
+        }
 
-    /* Mantén el header fijo y blanco */
-    header[data-testid="stHeader"] {
-        background-color: #ffffff !important;
-        color: #0F172A !important;
-        height: 3.5rem;  /* asegura tamaño estable */
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
+        /* Mantén el header fijo y blanco */
+        header[data-testid="stHeader"] {
+            background-color: #ffffff !important;
+            color: #0F172A !important;
+            height: 3.5rem;  /* asegura tamaño estable */
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
 
-    /* Corrige también el espaciado del título principal */
-    h1 {
-        margin-top: 0.5rem !important;
-    }
-    </style>
-""", unsafe_allow_html=True)  
+        /* Corrige también el espaciado del título principal */
+        h1 {
+            margin-top: 0.5rem !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 else:
     st.warning("No se encontró styles.css (se verá el estilo por defecto).")

@@ -86,4 +86,48 @@ elif mode == "Clasificación en vivo":
                 col3.metric("Tiempo", f"{data.get('elapsed_ms', 0)} ms")
 
                 # Detalle
-               
+                st.markdown(f"**Subtipo:** {data.get('subtype') or '—'}")
+                st.markdown(f"**Reason:** {data.get('reason') or '—'}")
+                st.caption(f"IHRA version: {data.get('ihra_version', '—')}")
+
+# --- 6) Modo Estadísticas (placeholder a /api/stats) ---
+elif mode == "Estadísticas":
+    st.header("📈 Estadísticas globales (v1)")
+    rango = st.selectbox("Rango", ["7d", "30d", "90d"], index=1)
+
+    try:
+        resp = requests.get(f"{API_BASE}/api/stats", headers=HEADERS, params={"range": rango}, timeout=30)
+    except Exception as e:
+        st.error(f"No se pudo conectar al backend: {e}")
+        st.stop()
+
+    if resp.status_code != 200:
+        st.error(f"No se pudo obtener stats: {resp.status_code} {resp.text}")
+    else:
+        stats = resp.json()
+        counts = stats.get("counts", {})
+        if counts:
+            st.subheader("Conteo por nivel IHRA")
+            df_counts = pd.DataFrame.from_dict(counts, orient="index").reset_index()
+            df_counts.columns = ["label", "count"]
+            df_counts = df_counts.sort_values("label")
+            fig, ax = plt.subplots()
+            ax.bar(df_counts["label"].astype(str), df_counts["count"])
+            ax.set_xlabel("Nivel IHRA")
+            ax.set_ylabel("Cantidad")
+            st.pyplot(fig)
+        else:
+            st.info("No hay datos de conteo aún.")
+
+        series = stats.get("series", [])
+        if series:
+            st.subheader("Evolución temporal")
+            df_series = pd.DataFrame(series)
+            if "date" in df_series.columns:
+                df_series = df_series.sort_values("date")
+                ax2 = df_series.set_index("date")[["0", "1", "2", "3"]].plot(figsize=(7, 4))
+                ax2.set_ylabel("Cantidad")
+                ax2.set_xlabel("Fecha")
+                st.pyplot(plt.gcf())
+        else:
+            st.caption("Cuando el backend empiece a acumular datos, verás la serie temporal acá.")
